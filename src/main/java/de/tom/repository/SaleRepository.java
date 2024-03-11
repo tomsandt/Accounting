@@ -17,11 +17,12 @@ public interface SaleRepository extends JpaRepository<Sale, Integer> {
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO sale(id, customer_id, cost_id, amount, date_of_sale, price, shipping, fee, reserve, profit)" +
-            "VALUES (:id, :customerId, :costId, :amount, :dateOfSale, :price, :shipping, :fee, :reserve, :profit)",
+    @Query(value = "INSERT INTO sale(id, customer_id, cost_id, article_id, amount, date_of_sale, price, shipping, fee, reserve, profit, status)" +
+            "VALUES (:id, :customerId, :costId, :articleId, :amount, :dateOfSale, :price, :shipping, :fee, :reserve, :profit, :status)",
             nativeQuery = true)
-    void saveSale(@Param("id") int id, @Param("customerId") int customerId, @Param("costId") int costId,
+    void saveSale(@Param("id") int id, @Param("customerId") int customerId, @Param("costId") int costId, @Param("articleId") int articleId,
                    @Param("amount") int amount, @Param("dateOfSale") LocalDate dateOfSale, @Param("price") double price,
-                   @Param("shipping") double shipping, @Param("fee") double fee, @Param("reserve") double reserve, @Param("profit") double profit);
+                   @Param("shipping") double shipping, @Param("fee") double fee, @Param("reserve") double reserve,
+                  @Param("profit") double profit, @Param("status") Sale.Status status);
 
 }

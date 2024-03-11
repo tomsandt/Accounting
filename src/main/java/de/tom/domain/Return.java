@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "product_return")
 public class Return {
 
     @Id
@@ -16,12 +17,11 @@ public class Return {
     private Customer customerId;
 
     @ManyToOne
-    @JoinColumn(name = "articleId", nullable = false)
-    private Article articleId;
-
-    @ManyToOne
     @JoinColumn(name = "saleId", nullable = false)
     private Sale saleId;
+
+    @Column(nullable = false)
+    private int amount;
 
     @Column(nullable = false)
     private LocalDate returnDate;
@@ -45,20 +45,20 @@ public class Return {
         this.customerId = customerId;
     }
 
-    public Article getArticleId() {
-        return articleId;
-    }
-
-    public void setArticleId(Article articleId) {
-        this.articleId = articleId;
-    }
-
     public Sale getSaleId() {
         return saleId;
     }
 
     public void setSaleId(Sale saleId) {
         this.saleId = saleId;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
     public LocalDate getReturnDate() {

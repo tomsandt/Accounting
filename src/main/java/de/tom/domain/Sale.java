@@ -7,6 +7,11 @@ import java.time.LocalDate;
 @Entity
 public class Sale {
 
+    public enum Status {
+        COMPLETED,
+        RETURNED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -18,6 +23,10 @@ public class Sale {
     @ManyToOne
     @JoinColumn(name = "costId", nullable = false)
     private Cost costId;
+
+    @ManyToOne
+    @JoinColumn(name = "articleId", nullable = false)
+    private Article articleId;
 
     @Column(nullable = false)
     private int amount;
@@ -39,6 +48,10 @@ public class Sale {
 
     @Column(nullable = false)
     private double profit;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
 
     public int getId() {
         return id;
@@ -62,6 +75,14 @@ public class Sale {
 
     public void setCostId(Cost costId) {
         this.costId = costId;
+    }
+
+    public Article getArticleId() {
+        return articleId;
+    }
+
+    public void setArticleId(Article articleId) {
+        this.articleId = articleId;
     }
 
     public int getAmount() {
@@ -118,5 +139,13 @@ public class Sale {
 
     public void setProfit(double profit) {
         this.profit = profit;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

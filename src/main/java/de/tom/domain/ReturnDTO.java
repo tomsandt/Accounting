@@ -6,8 +6,8 @@ public class ReturnDTO {
 
     private int id;
     private Customer customerId;
-    private Article articleId;
     private Sale saleId;
+    private int amount;
     private LocalDate returnDate;
     private String note;
 
@@ -27,20 +27,20 @@ public class ReturnDTO {
         this.customerId = customerId;
     }
 
-    public Article getArticleId() {
-        return articleId;
-    }
-
-    public void setArticleId(Article articleId) {
-        this.articleId = articleId;
-    }
-
     public Sale getSaleId() {
         return saleId;
     }
 
     public void setSaleId(Sale saleId) {
         this.saleId = saleId;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
     public LocalDate getReturnDate() {

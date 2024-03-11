@@ -71,9 +71,8 @@ public class CostService {
     public void deleteCost(int id) {
         if(!costRepository.existsById(id)) {
             throw new EntityNotFoundException("Cost not found with ID: " + id);
-        }else {
-            costRepository.deleteById(id);
         }
+        costRepository.deleteById(id);
 
     }
 

@@ -1,7 +1,6 @@
 package de.tom.controller;
 
 import de.tom.domain.*;
-import de.tom.repository.ArticleRepository;
 import de.tom.service.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +14,9 @@ import java.util.Optional;
 @RestController
 public class AccountingController {
 
-    @Autowired
-    ArticleService articleService;
 
     @Autowired
-    ArticleRepository articleRepository;
+    ArticleService articleService;
 
     @Autowired
     CostService costService;
@@ -247,6 +244,16 @@ public class AccountingController {
         if(sale.isPresent()) {
             return ResponseEntity.ok(sale.get());
         }else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/sale/{id}")
+    public ResponseEntity<Sale> updateStatus(@PathVariable int id, @RequestBody SaleDTO saleDTO) {
+        try {
+            Sale updatedSaleStatus = saleService.updateStatus(id, saleDTO);
+            return ResponseEntity.ok(updatedSaleStatus);
+        }catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }

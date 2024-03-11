@@ -7,6 +7,7 @@ public class SaleDTO {
     private int id;
     private Customer customerId;
     private Cost costId;
+    private Article articleId;
     private int amount;
     private LocalDate dateOfSale;
     private double price;
@@ -14,6 +15,7 @@ public class SaleDTO {
     private double fee;
     private double reserve;
     private double profit;
+    private Sale.Status status;
 
     public int getId() {
         return id;
@@ -37,6 +39,14 @@ public class SaleDTO {
 
     public void setCostId(Cost costId) {
         this.costId = costId;
+    }
+
+    public Article getArticleId() {
+        return articleId;
+    }
+
+    public void setArticleId(Article articleId) {
+        this.articleId = articleId;
     }
 
     public int getAmount() {
@@ -93,5 +103,13 @@ public class SaleDTO {
 
     public void setProfit(double profit) {
         this.profit = profit;
+    }
+
+    public Sale.Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Sale.Status status) {
+        this.status = status;
     }
 }
