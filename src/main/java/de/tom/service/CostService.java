@@ -72,6 +72,16 @@ public class CostService {
         if(!costRepository.existsById(id)) {
             throw new EntityNotFoundException("Cost not found with ID: " + id);
         }
+        Cost cost = costRepository.findCostById(id);
+        Inventory inventoryItem = inventoryRepository.findByArticleId_Id(cost.getArticleId().getId());
+        inventoryItem.setAmount(inventoryItem.getAmount() - cost.getAmount());
+
+        if (inventoryItem.getAmount() == 0) {
+            inventoryRepository.delete(inventoryItem);
+        }else {
+            inventoryRepository.save(inventoryItem);
+        }
+
         costRepository.deleteById(id);
 
     }

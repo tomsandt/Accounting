@@ -138,6 +138,10 @@ public class SaleService {
         if(!saleRepository.existsById(id)) {
             throw new EntityNotFoundException("Sale not found with ID: " + id);
         }else {
+            Sale sale = saleRepository.findSaleById(id);
+            Inventory inventoryItem = inventoryRepository.findByArticleId_Id(sale.getArticleId().getId());
+            inventoryItem.setAmount(inventoryItem.getAmount() + sale.getAmount());
+
             saleRepository.deleteById(id);
         }
 
