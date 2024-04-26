@@ -2,7 +2,7 @@ package de.tom.service;
 
 import de.tom.domain.Inventory;
 import de.tom.domain.InventoryDTO;
-import de.tom.repository.InventoryRepository;
+import de.tom.repository.DatabaseRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,32 +14,32 @@ import java.util.Optional;
 public class InventoryService {
 
     @Autowired
-    private InventoryRepository inventoryRepository;
+    private DatabaseRepository databaseRepository;
 
     public List<Inventory> getInventory() {
-        return inventoryRepository.findAll();
+        return databaseRepository.findAll(Inventory.class);
     }
 
     public Optional<Inventory> getInventoryItemById(int id) {
-        return Optional.ofNullable(inventoryRepository.findByArticleId_Id(id));
+        return Optional.ofNullable(databaseRepository.findByForeignKey(Inventory.class, "article", id));
     }
 
     public Inventory createInventoryItem(InventoryDTO inventoryDTO) {
 
         Inventory newInventoryItem = new Inventory();
 
-        newInventoryItem.setArticleId(inventoryDTO.getArticleId());
+        newInventoryItem.setArticle(inventoryDTO.getArticle());
         newInventoryItem.setAmount(inventoryDTO.getAmount());
         newInventoryItem.setPurchaseDate(inventoryDTO.getPurchaseDate());
 
-        return inventoryRepository.save(newInventoryItem);
+        return databaseRepository.save(newInventoryItem);
     }
 
     public void deleteInventoryItem(int id) {
-        if(!inventoryRepository.existsById(id)) {
+        if(databaseRepository.findById(Inventory.class, id) == null) {
             throw new EntityNotFoundException("Article not found with the ID: " + id);
         }else {
-            inventoryRepository.deleteById(id);
+            databaseRepository.delete(Inventory.class, id);
         }
     }
 

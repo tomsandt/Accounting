@@ -14,59 +14,47 @@ import java.util.Optional;
 public class ReturnService {
 
     @Autowired
-    private ReturnRepository returnRepository;
-
-    @Autowired
-    private SaleRepository saleRepository;
-
-    @Autowired
-    private InventoryRepository inventoryRepository;
-
-    @Autowired
-    private ArticleRepository articleRepository;
-
-    @Autowired
-    private CostRepository costRepository;
+    private DatabaseRepository databaseRepository;
 
     public List<Return> getAllReturns() {
-        return returnRepository.findAll();
+        return databaseRepository.findAll(Return.class);
     }
 
     public Optional<Return> getReturnById(int id) {
-        return Optional.ofNullable(returnRepository.findById(id));
+        return Optional.ofNullable(databaseRepository.findById(Return.class, id));
     }
 
     @Transactional
     public void deleteReturnBySaleId(Sale sale) {
 
-        Inventory inventoryItem = inventoryRepository.findByArticleId_Id(sale.getArticleId().getId());
+        Inventory inventoryItem = databaseRepository.findByForeignKey(Inventory.class, "article", sale.getArticleId().getId());
         inventoryItem.setAmount(inventoryItem.getAmount() - sale.getAmount());
 
-        Return returns = returnRepository.findBySaleId(sale);
-        returnRepository.delete(returns);
+        Return returns = databaseRepository.findByForeignKey(Return.class, "sale", sale);
+        databaseRepository.delete(Return.class, returns.getId());
     }
 
     @Transactional
     public Return createReturn(ReturnDTO returnDTO) {
 
-        Sale sale = saleRepository.findSaleById(returnDTO.getSaleId().getId());
-        Article article = articleRepository.findById(sale.getArticleId().getId());
+        Sale sale = databaseRepository.findById(Sale.class, returnDTO.getSaleId().getId());
+        Article article = databaseRepository.findById(Article.class, sale.getArticleId().getId());
 
         //change Inventory
-        if (inventoryRepository.findByArticleId_Id(article.getId()) == null) {
+        if (databaseRepository.findByForeignKey(Inventory.class, "article", article) == null) {
             Inventory newInventoryItem = new Inventory();
-            Cost cost = costRepository.findCostById(sale.getCostId().getId());
+            Cost cost = databaseRepository.findById(Cost.class, sale.getCostId().getId());
 
-            newInventoryItem.setArticleId(article);
+            newInventoryItem.setArticle(article);
             newInventoryItem.setAmount(sale.getAmount());
             newInventoryItem.setPurchaseDate(cost.getPurchaseDate());
 
-            inventoryRepository.save(newInventoryItem);
+            databaseRepository.save(newInventoryItem);
         }else {
-            Inventory inventoryItem = inventoryRepository.findByArticleId_Id(article.getId());
+            Inventory inventoryItem = databaseRepository.findByForeignKey(Inventory.class, "article", article);
             inventoryItem.setAmount(inventoryItem.getAmount() + returnDTO.getAmount());
 
-            inventoryRepository.save(inventoryItem);
+            databaseRepository.save(inventoryItem);
         }
 
         Return newReturn = new Return();
@@ -77,14 +65,14 @@ public class ReturnService {
         newReturn.setReturnDate(returnDTO.getReturnDate());
         newReturn.setNote(returnDTO.getNote());
 
-        return returnRepository.save(newReturn);
+        return databaseRepository.save(newReturn);
     }
 
     public void deleteReturn(int id) {
-        if (!returnRepository.existsById(id)) {
+        if (databaseRepository.findById(Return.class, id) == null) {
             throw new EntityNotFoundException("Return not found with ID: " + id);
         }else {
-            returnRepository.deleteById(id);
+            databaseRepository.delete(Return.class, id);
         }
     }
 

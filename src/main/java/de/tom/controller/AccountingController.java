@@ -86,9 +86,9 @@ public class AccountingController {
 
     @GetMapping("/cost/{id}")
     public ResponseEntity<Cost> getCost(@PathVariable int id) {
-        Optional<Cost> cost = costService.getCostById(id);
-        if(cost.isPresent()) {
-            return ResponseEntity.ok(cost.get());
+        Cost cost = costService.getCostById(id);
+        if(cost != null) {
+            return ResponseEntity.ok(cost);
         }else {
             return ResponseEntity.notFound().build();
         }
@@ -120,9 +120,9 @@ public class AccountingController {
 
     @GetMapping("/customer/{id}")
     public ResponseEntity<Customer> getCustomer(@PathVariable int id) {
-        Optional<Customer> customer = customerService.getCustomerById(id);
-        if(customer.isPresent()) {
-            return ResponseEntity.ok(customer.get());
+        Customer customer = customerService.getCustomerById(id);
+        if(customer != null) {
+            return ResponseEntity.ok(customer);
         }else {
             return ResponseEntity.notFound().build();
         }
@@ -154,9 +154,9 @@ public class AccountingController {
 
     @GetMapping("/dealer/{id}")
     public ResponseEntity<Dealer> getDealer(@PathVariable int id) {
-        Optional<Dealer> dealer = dealerService.getDealerById(id);
-        if(dealer.isPresent()) {
-            return ResponseEntity.ok(dealer.get());
+        Dealer dealer = dealerService.getDealerById(id);
+        if(dealer != null) {
+            return ResponseEntity.ok(dealer);
         }else {
             return ResponseEntity.notFound().build();
         }
@@ -240,9 +240,9 @@ public class AccountingController {
 
     @GetMapping("/sale/{id}")
     public ResponseEntity<Sale> getSale(@PathVariable int id) {
-        Optional<Sale> sale = saleService.getSaleById(id);
-        if(sale.isPresent()) {
-            return ResponseEntity.ok(sale.get());
+        Sale sale = saleService.getSaleById(id);
+        if(sale != null) {
+            return ResponseEntity.ok(sale);
         }else {
             return ResponseEntity.notFound().build();
         }

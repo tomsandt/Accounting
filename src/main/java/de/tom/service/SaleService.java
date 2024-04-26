@@ -11,62 +11,46 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SaleService {
 
     @Autowired
-    private SaleRepository saleRepository;
-
-    @Autowired
-    private ArticleRepository articleRepository;
-
-    @Autowired
-    private InventoryRepository inventoryRepository;
-
-    @Autowired
-    private CostRepository costRepository;
+    private DatabaseRepository databaseRepository;
 
     @Autowired
     private ReturnService returnService;
 
-    @Autowired
-    private CustomerRepository customerRepository;
-
-    @Autowired
-    private ReturnRepository returnRepository;
-
     public List<Sale> getAllSales() {
-        return saleRepository.findAll();
+        return databaseRepository.findAll(Sale.class);
     }
 
-    public Optional<Sale> getSaleById(int id) {
-        return saleRepository.findById(id);
+    public Sale getSaleById(int id) {
+        return databaseRepository.findById(Sale.class, id);
     }
 
     @Transactional
     public Sale createSale(SaleDTO saleDTO) {
 
-        Cost cost = costRepository.findCostById(saleDTO.getCostId().getId());
-        Article article = articleRepository.findById(cost.getArticleId().getId());
+        Cost cost = databaseRepository.findById(Cost.class, saleDTO.getCostId().getId());
+        Article article = databaseRepository.findById(Article.class, cost.getArticleId().getId());
         if (article == null) {
             throw new EntityNotFoundException("Article not found with ID: " + saleDTO.getCostId().getArticleId().getId());
         }else {
-            Inventory inventoryItem = inventoryRepository.findByArticleId_Id(article.getId());
+            Inventory inventoryItem = databaseRepository.findByForeignKey(Inventory.class, "article", article);
 
             if (inventoryItem != null) {
                 inventoryItem.setAmount(inventoryItem.getAmount() - saleDTO.getAmount());
 
                 if (inventoryItem.getAmount() == 0) {
-                    inventoryRepository.delete(inventoryItem);
+                    databaseRepository.delete(Inventory.class, inventoryItem.getId());
                 }else {
-                    inventoryRepository.save(inventoryItem);
+                    databaseRepository.save(inventoryItem);
                 }
             }
         }
 
-        Cost cost_Sale = costRepository.findCostById(saleDTO.getCostId().getId());
+        Cost cost_Sale = databaseRepository.findById(Cost.class, saleDTO.getCostId().getId());
 
         BigDecimal purchasePrice = BigDecimal.valueOf(cost_Sale.getTotalPrice());
         BigDecimal sellPrice = BigDecimal.valueOf(saleDTO.getPrice());
@@ -95,30 +79,29 @@ public class SaleService {
         newSale.setProfit(saleDTO.getProfit());
         newSale.setStatus(Sale.Status.COMPLETED);
 
-        return saleRepository.save(newSale);
+        return databaseRepository.save(newSale);
     }
 
     @Transactional
     public Sale updateStatus(int id, SaleDTO saleDTO) {
 
-        Optional<Sale> existingSaleOptional = saleRepository.findById(id);
-        if (!existingSaleOptional.isPresent()) {
+        Sale existingSaleOptional = databaseRepository.findById(Sale.class, id);
+        if (existingSaleOptional == null) {
             throw new EntityNotFoundException("Sale not found with ID: " + id);
         }else {
-            Sale existingSale = existingSaleOptional.get();
             if (saleDTO.getStatus() == Sale.Status.RETURNED) {
-                handleSaleReturned(existingSale);
+                handleSaleReturned(existingSaleOptional);
             }else if (saleDTO.getStatus() == Sale.Status.COMPLETED) {
-                handleSaleCompleted(existingSale);
+                handleSaleCompleted(existingSaleOptional);
             }
-            return saleRepository.save(existingSale);
+            return databaseRepository.save(existingSaleOptional);
         }
     }
 
     private void handleSaleReturned(Sale existingSale) {
         ReturnDTO returnDTO = new ReturnDTO();
 
-        returnDTO.setCustomerId(customerRepository.findCustomerById(existingSale.getCustomerId().getId()));
+        returnDTO.setCustomerId(databaseRepository.findById(Customer.class, existingSale.getCustomerId().getId()));
         returnDTO.setSaleId(existingSale);
         returnDTO.setAmount(existingSale.getAmount());
         returnDTO.setReturnDate(LocalDate.now());
@@ -135,14 +118,14 @@ public class SaleService {
 
 
     public void deleteSale(int id) {
-        if(!saleRepository.existsById(id)) {
+        if(databaseRepository.findById(Sale.class, id) == null) {
             throw new EntityNotFoundException("Sale not found with ID: " + id);
         }else {
-            Sale sale = saleRepository.findSaleById(id);
-            Inventory inventoryItem = inventoryRepository.findByArticleId_Id(sale.getArticleId().getId());
+            Sale sale = databaseRepository.findById(Sale.class, id);
+            Inventory inventoryItem = databaseRepository.findByForeignKey(Inventory.class, "article", sale.getArticleId().getId());
             inventoryItem.setAmount(inventoryItem.getAmount() + sale.getAmount());
 
-            saleRepository.deleteById(id);
+            databaseRepository.delete(Sale.class, id);
         }
 
     }

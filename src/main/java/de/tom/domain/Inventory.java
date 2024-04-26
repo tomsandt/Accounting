@@ -8,12 +8,12 @@ import java.time.LocalDate;
 public class Inventory {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "articleId")
-    private Article articleId;
+    @ManyToOne
+    @JoinColumn(name = "articleId", nullable = false)
+    private Article article;
 
     @Column(nullable = false)
     private int amount;
@@ -21,12 +21,20 @@ public class Inventory {
     @Column(nullable = false)
     private LocalDate purchaseDate;
 
-    public Article getArticleId() {
-        return articleId;
+    public int getId() {
+        return id;
     }
 
-    public void setArticleId(Article articleId) {
-        this.articleId = articleId;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Article getArticle() {
+        return article;
+    }
+
+    public void setArticle(Article article) {
+        this.article = article;
     }
 
     public int getAmount() {

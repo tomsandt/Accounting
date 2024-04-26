@@ -4,16 +4,25 @@ import java.time.LocalDate;
 
 public class InventoryDTO {
 
-    private Article articleId;
+    private int id;
+    private Article article;
     private int amount;
     private LocalDate purchaseDate;
 
-    public Article getArticleId() {
-        return articleId;
+    public int getId() {
+        return id;
     }
 
-    public void setArticleId(Article articleId) {
-        this.articleId = articleId;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Article getArticle() {
+        return article;
+    }
+
+    public void setArticle(Article article) {
+        this.article = article;
     }
 
     public int getAmount() {

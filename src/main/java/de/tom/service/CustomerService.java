@@ -1,30 +1,18 @@
 package de.tom.service;
 
-import de.tom.domain.Article;
-import de.tom.domain.Cost;
 import de.tom.domain.Customer;
 import de.tom.domain.CustomerDTO;
-import de.tom.repository.CustomerRepository;
-import jakarta.persistence.EntityNotFoundException;
+import de.tom.repository.DatabaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CustomerService {
 
     @Autowired
-    private CustomerRepository customerRepository;
-
-    public List<Customer> getAllCustomers() {
-        return customerRepository.findAll();
-    }
-
-    public Optional<Customer> getCustomerById(int id) {
-        return customerRepository.findById(id);
-    }
+    private DatabaseRepository databaseRepository;
 
     public Customer createCustomer(CustomerDTO customerDTO) {
 
@@ -38,16 +26,19 @@ public class CustomerService {
         newCustomer.setEmailAddress(customerDTO.getEmailAddress());
         newCustomer.setPhoneNumber(customerDTO.getPhoneNumber());
 
-        return customerRepository.save(newCustomer);
+        return databaseRepository.save(newCustomer);
     }
 
     public void deleteCustomer(int id) {
-        if(!customerRepository.existsById(id)) {
-            throw new EntityNotFoundException("Customer not found with ID: " + id);
-        }else {
-            customerRepository.deleteById(id);
-        }
+        databaseRepository.delete(Customer.class, id);
+    }
 
+    public Customer getCustomerById(int id) {
+        return databaseRepository.findById(Customer.class, id);
+    }
+
+    public List<Customer> getAllCustomers() {
+        return databaseRepository.findAll(Customer.class);
     }
 
 }
